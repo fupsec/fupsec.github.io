@@ -52,7 +52,7 @@ jobs:
       - name: Commit changes
         run: |
           git add index.html background.jpg
-          git commit -m 'Automated daily build: Update static website' || echo "No changes to commit"
+          git commit -m '✅ Automated daily build: Update static website' || echo "☑️ No changes to commit"
 
       # 7. 推送更改到仓库 - 更新为最新版本的push action
       - name: Push changes
