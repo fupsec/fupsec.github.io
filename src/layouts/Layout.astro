@@ -460,29 +460,21 @@ const siteLang = lang.replace("_", "-");
             } else {
               mainContentWrapper.classList.remove("mobile-main-no-banner");
             }
-            // 全屏壁纸模式：主内容使用相对定位
-            if (wallpaperMode === WALLPAPER_FULLSCREEN) {
+            // 全屏壁纸模式：用 relative 定位让内容紧跟壁纸（移动端非首页除外，壁纸已隐藏）
+            const isMobileNonHome = window.innerWidth < 1024 && !isHomePage;
+            if (wallpaperMode === WALLPAPER_FULLSCREEN && !isMobileNonHome) {
               mainContentWrapper.style.position = "relative";
-              mainContentWrapper.style.top = "auto";
-              mainContentWrapper.style.marginTop = "0.5rem";
+              mainContentWrapper.style.top = "0";
               mainContentWrapper.style.zIndex = "30";
+              mainContentWrapper.style.setProperty("margin-top", "5.5rem", "important");
+            } else if (isMobileNonHome) {
+              mainContentWrapper.style.setProperty("top", "5.5rem", "important");
+              mainContentWrapper.style.position = "";
+              mainContentWrapper.style.zIndex = "";
+              mainContentWrapper.style.setProperty("margin-top", "0", "important");
             }
-          }
-
-          // 处理credit元素
-          const creditDesktop = document.getElementById(
-            "banner-credit-desktop"
-          );
-          const creditMobile = document.getElementById("banner-credit-mobile");
-          if (
-            wallpaperMode === WALLPAPER_OVERLAY ||
-            wallpaperMode === WALLPAPER_NONE
-          ) {
-            if (creditDesktop) creditDesktop.style.display = "none";
-            if (creditMobile) creditMobile.style.display = "none";
-          } else {
-            if (creditDesktop) creditDesktop.style.display = "";
-            if (creditMobile) creditMobile.style.display = "";
+            // 定位完成后显示主内容（初始CSS规则会隐藏，防止壁纸初始化前闪烁）
+            mainContentWrapper.style.visibility = "visible";
           }
 
           // 处理banner homeText元素
@@ -508,6 +500,14 @@ const siteLang = lang.replace("_", "-");
         const wavesEnabled = localStorage.getItem("wavesEnabled");
         if (wavesEnabled !== null) {
           document.documentElement.setAttribute("data-waves-enabled", wavesEnabled);
+        }
+      })();
+
+      // 初始化渐变过渡状态 - 在 html 元素上设置属性，CSS 会立即生效
+      (function applyGradientEnabled() {
+        const gradientEnabled = localStorage.getItem("gradientEnabled");
+        if (gradientEnabled !== null) {
+          document.documentElement.setAttribute("data-gradient-enabled", gradientEnabled);
         }
       })();
 
@@ -543,6 +543,7 @@ const siteLang = lang.replace("_", "-");
     class="min-h-screen"
     class:list={[
       {
+        "is-home": isHomePageCheck,
         "lg:is-home": isHomePageCheck,
         "enable-banner": enableBanner,
         "sticky-navbar": siteConfig.navbar.stickyNavbar ?? false,
@@ -934,6 +935,55 @@ function disableAnimation() {
       }
     });
     window.swup.hooks.on("content:replace", () => {
+      const isHome = pathsEqual(window.location.pathname, url("/"));
+      const currentMode = document.documentElement.getAttribute("data-wallpaper-mode");
+      const isMobileForBanner = window.innerWidth < 1024;
+      const wrapper = document.getElementById("wallpaper-wrapper");
+      const mainEl = document.querySelector(".w-full.z-30.pointer-events-none") as HTMLElement | null;
+
+      // 移动端 banner/全屏模式：非首页隐藏壁纸，首页恢复
+      if (isMobileForBanner && (currentMode === "banner" || currentMode === "fullscreen")) {
+          if (!isHome) {
+            if (wrapper) {
+              wrapper.style.display = "none";
+              wrapper.classList.add("mobile-hide-banner");
+            }
+            if (mainEl) {
+              mainEl.classList.add("mobile-main-no-banner");
+              mainEl.style.setProperty("top", "5.5rem", "important");
+              mainEl.style.position = "";
+              mainEl.style.zIndex = "";
+              mainEl.style.setProperty("margin-top", "0", "important");
+            }
+          } else {
+            if (wrapper) {
+              wrapper.style.display = "block";
+              wrapper.classList.remove("mobile-hide-banner");
+            }
+            if (mainEl) {
+              mainEl.classList.remove("mobile-main-no-banner");
+              if (currentMode === "fullscreen") {
+                mainEl.style.position = "relative";
+                mainEl.style.zIndex = "30";
+                mainEl.style.setProperty("top", "0", "important");
+                mainEl.style.setProperty("margin-top", "5.5rem", "important");
+              } else {
+                mainEl.style.removeProperty("top");
+                mainEl.style.position = "";
+                mainEl.style.zIndex = "";
+              }
+            }
+          }
+      }
+
+      // 桌面端全屏壁纸模式：壁纸始终可见，内容用 relative 定位紧跟壁纸
+      if (!isMobileForBanner && currentMode === "fullscreen" && mainEl) {
+        mainEl.style.position = "relative";
+        mainEl.style.zIndex = "30";
+        mainEl.style.setProperty("top", "0", "important");
+        mainEl.style.setProperty("margin-top", "5.5rem", "important");
+      }
+
       // 更新侧边栏组件的可见性（根据新页面的 URL）
       updateSidebarComponentsVisibility();
 
@@ -991,8 +1041,22 @@ function disableAnimation() {
 
       if (isHomePage) {
         bodyElement!.classList.add("lg:is-home");
+        bodyElement!.classList.add("is-home");
       } else {
         bodyElement!.classList.remove("lg:is-home");
+        bodyElement!.classList.remove("is-home");
+      }
+
+      // 同步壁纸模式的 body 类（防止 enable-banner 从初始加载残留到全屏/overlay/none 模式）
+      const currentWallpaperMode = document.documentElement.getAttribute("data-wallpaper-mode");
+      if (currentWallpaperMode !== "banner") {
+        bodyElement!.classList.remove("enable-banner");
+        bodyElement!.classList.add("no-banner-layout");
+        if (currentWallpaperMode === "overlay") {
+          bodyElement!.classList.add("wallpaper-transparent");
+        } else {
+          bodyElement!.classList.remove("wallpaper-transparent");
+        }
       }
 
       // Control navbar transparency based on page
@@ -1034,25 +1098,34 @@ function disableAnimation() {
           // 首页：禁用主内容区域的过渡动画，防止文章列表下移
           mainContentWrapper.style.transition = "none";
 
-          // 先显示banner，然后移除隐藏类让其优雅出现
+          // 移除隐藏类让壁纸出现（display:none 由 CSS 类控制，需先移除类）
+          wallpaperWrapper.classList.remove("mobile-hide-banner");
           wallpaperWrapper.style.display = "";
           setTimeout(() => {
-            wallpaperWrapper.classList.remove("mobile-hide-banner");
-          }, 100);
-          setTimeout(() => {
             mainContentWrapper.classList.remove("mobile-main-no-banner");
+            // 清除之前设置的内联top，恢复banner模式的CSS计算值
+            mainContentWrapper.style.removeProperty("top");
+            // 全屏壁纸模式下恢复top: 0（内容在文档流中紧跟壁纸）
+            const visitCurrentMode = document.documentElement.getAttribute("data-wallpaper-mode");
+            if (visitCurrentMode === "fullscreen") {
+              mainContentWrapper.style.position = "relative";
+              mainContentWrapper.style.zIndex = "30";
+              mainContentWrapper.style.setProperty("top", "0", "important");
+              mainContentWrapper.style.setProperty("margin-top", "5.5rem", "important");
+            }
             // 在移除类之后立即恢复过渡动画（下次导航时使用）
             setTimeout(() => {
               mainContentWrapper.style.transition = "";
             }, 50);
           }, 150);
         } else {
-          // 非首页：分阶段隐藏，先隐藏banner，再移动内容
+          // 非首页：隐藏壁纸并移动内容
           wallpaperWrapper.classList.add("mobile-hide-banner");
-          // 延迟移动内容，让banner先完全消失
-          setTimeout(() => {
-            mainContentWrapper.classList.add("mobile-main-no-banner");
-          }, 100);
+          mainContentWrapper.classList.add("mobile-main-no-banner");
+          mainContentWrapper.style.setProperty("top", "5.5rem", "important");
+          mainContentWrapper.style.position = "";
+          mainContentWrapper.style.zIndex = "";
+          mainContentWrapper.style.setProperty("margin-top", "0", "important");
         }
       } else if (!isMobile && wallpaperWrapper) {
         // 桌面端：确保banner正常显示
@@ -1060,6 +1133,14 @@ function disableAnimation() {
         wallpaperWrapper.classList.remove("mobile-hide-banner");
         if (mainContentWrapper) {
           mainContentWrapper.classList.remove("mobile-main-no-banner");
+          // 桌面端全屏壁纸模式：壁纸始终可见，内容用 relative 定位紧跟壁纸
+          const visitDesktopMode = document.documentElement.getAttribute("data-wallpaper-mode");
+          if (visitDesktopMode === "fullscreen") {
+            mainContentWrapper.style.position = "relative";
+            mainContentWrapper.style.zIndex = "30";
+            mainContentWrapper.style.setProperty("top", "0", "important");
+            mainContentWrapper.style.setProperty("margin-top", "5.5rem", "important");
+          }
         }
       }
 
@@ -1093,6 +1174,54 @@ function disableAnimation() {
       const heightExtend = document.getElementById("page-height-extend");
       if (heightExtend) {
         heightExtend.classList.remove("hidden");
+      }
+
+      // 移动端 banner/全屏模式：非首页隐藏壁纸，首页恢复
+      const isHome = pathsEqual(window.location.pathname, url("/"));
+      const currentMode = document.documentElement.getAttribute("data-wallpaper-mode");
+      const isMobileForBanner = window.innerWidth < 1024;
+      const wrapper = document.getElementById("wallpaper-wrapper") as HTMLElement | null;
+      const mainEl = document.querySelector(".w-full.z-30.pointer-events-none") as HTMLElement | null;
+      if (isMobileForBanner && (currentMode === "banner" || currentMode === "fullscreen")) {
+          if (!isHome) {
+            if (wrapper) {
+              wrapper.style.display = "none";
+              wrapper.classList.add("mobile-hide-banner");
+            }
+            if (mainEl) {
+              mainEl.classList.add("mobile-main-no-banner");
+              mainEl.style.setProperty("top", "5.5rem", "important");
+              mainEl.style.position = "";
+              mainEl.style.zIndex = "";
+              mainEl.style.setProperty("margin-top", "0", "important");
+            }
+          } else {
+            if (wrapper) {
+              wrapper.style.display = "block";
+              wrapper.classList.remove("mobile-hide-banner");
+            }
+            if (mainEl) {
+              mainEl.classList.remove("mobile-main-no-banner");
+              if (currentMode === "fullscreen") {
+                mainEl.style.position = "relative";
+                mainEl.style.zIndex = "30";
+                mainEl.style.setProperty("top", "0", "important");
+                mainEl.style.setProperty("margin-top", "5.5rem", "important");
+              } else {
+                mainEl.style.removeProperty("top");
+                mainEl.style.position = "";
+                mainEl.style.zIndex = "";
+              }
+            }
+          }
+      }
+
+      // 桌面端全屏壁纸模式：壁纸始终可见，内容用 relative 定位紧跟壁纸
+      if (!isMobileForBanner && currentMode === "fullscreen" && mainEl) {
+        mainEl.style.position = "relative";
+        mainEl.style.zIndex = "30";
+        mainEl.style.setProperty("top", "0", "important");
+        mainEl.style.setProperty("margin-top", "5.5rem", "important");
       }
 
       // 在移动端恢复文章列表容器的过渡动画（在主内容区位置动画完成后）

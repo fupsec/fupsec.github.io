@@ -92,40 +92,22 @@ const wavesEnabledOnMobile =
 const shouldRenderWaves =
 	wavesEnabledOnDesktop || wavesEnabledOnMobile || wavesSwitchable;
 
-// 处理分设备控制的横幅信贷显示
-const creditEnableConfig = backgroundWallpaper.common?.credit?.enable;
-const creditEnabledOnDesktop =
-	typeof creditEnableConfig === "object"
-		? creditEnableConfig.desktop
-		: creditEnableConfig;
-const creditEnabledOnMobile =
-	typeof creditEnableConfig === "object"
-		? creditEnableConfig.mobile
-		: creditEnableConfig;
-
-const hasBannerCredit =
-	isBannerMode && isBackgroundEnabled && creditEnableConfig;
-
-// 处理分设备控制的横幅信贷文本和链接
-const creditTextConfig = backgroundWallpaper.common?.credit?.text;
-const creditTextDesktop =
-	typeof creditTextConfig === "object"
-		? creditTextConfig.desktop
-		: creditTextConfig;
-const creditTextMobile =
-	typeof creditTextConfig === "object"
-		? creditTextConfig.mobile
-		: creditTextConfig;
-
-const creditUrlConfig = backgroundWallpaper.common?.credit?.url;
-const creditUrlDesktop =
-	typeof creditUrlConfig === "object"
-		? creditUrlConfig.desktop
-		: creditUrlConfig;
-const creditUrlMobile =
-	typeof creditUrlConfig === "object"
-		? creditUrlConfig.mobile
-		: creditUrlConfig;
+// 渐变过渡配置
+const gradientConfig = backgroundWallpaper.common?.gradient?.enable;
+const gradientSwitchable =
+	backgroundWallpaper.common?.gradient?.switchable ?? false;
+const gradientEnabledOnDesktop =
+	typeof gradientConfig === "object"
+		? gradientConfig.desktop
+		: (gradientConfig ?? true);
+const gradientEnabledOnMobile =
+	typeof gradientConfig === "object"
+		? gradientConfig.mobile
+		: (gradientConfig ?? true);
+const gradientHeight = backgroundWallpaper.common?.gradient?.height ?? "30vh";
+// 是否需要渲染渐变元素（任一设备启用 或 允许用户切换）
+const shouldRenderGradient =
+	gradientEnabledOnDesktop || gradientEnabledOnMobile || gradientSwitchable;
 
 // 检查是否为首页
 const isHomePageCheck = isHomePage(Astro.url.pathname);
@@ -744,8 +726,8 @@ const bannerCarouselInterval = Math.max(
         </div>
     )}
 
-    <!-- Fullscreen 模式下首页显示向下滚动指示器 -->
-    {(isFullscreenMode || isWallpaperSwitchable) && isHomePageCheck && <ScrollDownIndicator />}
+    <!-- Fullscreen 模式下显示向下滚动指示器 -->
+    {(isFullscreenMode || isWallpaperSwitchable) && <ScrollDownIndicator />}
     </div>
 
     <!-- Water waves effect - 如果允许切换或任一设备启用则渲染 -->
@@ -798,6 +780,15 @@ const bannerCarouselInterval = Math.max(
         </svg>
     </div>
     ) : null}
+
+    <!-- Gradient transition - 当水波纹关闭时显示，提供壁纸底部到背景色的平滑过渡 -->
+    {shouldRenderGradient ? (
+    <div class={`wallpaper-gradient absolute bottom-0 left-0 w-full pointer-events-none
+        ${!gradientEnabledOnMobile ? 'hidden' : ''} ${!gradientEnabledOnDesktop ? 'md:hidden' : ''} ${gradientEnabledOnDesktop ? 'md:block' : ''}`}
+        id="wallpaper-gradient"
+        style={`height: ${gradientHeight}; background: linear-gradient(to bottom, transparent, var(--page-bg));`}>
+    </div>
+    ) : null}
 </div>
 )}
 
@@ -810,7 +801,7 @@ const bannerCarouselInterval = Math.max(
 )}
 
 <!-- Main content -->
-<div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${!(isBannerMode && isBackgroundEnabled) ? 'no-banner-layout' : ''}`} style={isFullscreenMode ? 'top: 100vh; margin-top: 0.5rem;' : `top: ${finalMainPanelTop}`}>
+<div class={`absolute w-full z-30 pointer-events-none ${mobileNonHomeBannerClass ? 'mobile-main-no-banner' : ''} ${!(isBannerMode && isBackgroundEnabled) ? 'no-banner-layout' : ''}`} style={isFullscreenMode ? 'top: 0;' : `top: ${finalMainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative w-full xl:w-[92vw] max-w-(--page-width) mx-auto pointer-events-auto">
         <div id="main-grid"
@@ -819,46 +810,6 @@ const bannerCarouselInterval = Math.max(
           data-tablet-sidebar={sidebarLayoutConfig.tabletSidebar ?? "left"}
           data-show-both-sidebars-on-post={sidebarLayoutConfig.showBothSidebarsOnPostPage ? "true" : "false"}
         >
-            <!-- Background image credit - Desktop -->
-            {hasBannerCredit && creditEnabledOnDesktop && <a 
-                href={creditUrlDesktop || "#"} 
-                id="banner-credit-desktop" 
-                target={creditUrlDesktop ? "_blank" : "_self"}
-                rel={creditUrlDesktop ? "noopener" : ""}
-                aria-label="Visit image source"
-                class:list={[
-                    "group onload-animation transition-all absolute justify-center items-center rounded-full " +
-                    "px-3 right-4 -top-13 bg-black/60 hover:bg-black/70 h-9 hidden md:flex", 
-                    {"hover:pr-9 active:bg-black/80": creditUrlDesktop}
-                ]}
-            >
-                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{creditTextDesktop}</div>
-                {creditUrlDesktop && <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0 group-hover:opacity-100"]}
-                      name="fa7-solid:arrow-up-right-from-square">
-                </Icon>}
-            </a>}
-
-            <!-- Background image credit - Mobile -->
-            {hasBannerCredit && creditEnabledOnMobile && <a 
-                href={creditUrlMobile || "#"} 
-                id="banner-credit-mobile" 
-                target={creditUrlMobile ? "_blank" : "_self"}
-                rel={creditUrlMobile ? "noopener" : ""}
-                aria-label="Visit image source"
-                class:list={[
-                    "group onload-animation transition-all absolute justify-center items-center rounded-full " +
-                    "px-3 right-4 -top-13 bg-black/60 hover:bg-black/70 h-9 flex md:hidden", 
-                    {"hover:pr-9 active:bg-black/80": creditUrlMobile}
-                ]}
-            >
-                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{creditTextMobile}</div>
-                {creditUrlMobile && <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0 group-hover:opacity-100"]}
-                      name="fa7-solid:arrow-up-right-from-square">
-                </Icon>}
-            </a>}
-
 
             {/* 渲染左侧边栏 - 根据position和tabletSidebar配置显示 */}
             {/*

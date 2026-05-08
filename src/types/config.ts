@@ -564,26 +564,6 @@ export type BackgroundWallpaperConfig = {
 				pauseTime: number; // 完整显示后的暂停时间（毫秒）
 			};
 		};
-		credit?: {
-			enable:
-				| boolean
-				| {
-						desktop: boolean; // 桌面端是否显示横幅图片来源文本
-						mobile: boolean; // 移动端是否显示横幅图片来源文本
-				  }; // 是否显示横幅图片来源文本，支持布尔值或分别设置桌面端和移动端
-			text:
-				| string
-				| {
-						desktop: string; // 桌面端显示的来源文本
-						mobile: string; // 移动端显示的来源文本
-				  }; // 横幅图片来源文本，支持字符串或分别设置桌面端和移动端
-			url?:
-				| string
-				| {
-						desktop: string; // 桌面端原始艺术品或艺术家页面的 URL 链接
-						mobile: string; // 移动端原始艺术品或艺术家页面的 URL 链接
-				  }; // 原始艺术品或艺术家页面的 URL 链接，支持字符串或分别设置桌面端和移动端
-		};
 		navbar?: {
 			transparentMode?: "semi" | "full" | "semifull"; // 导航栏透明模式
 			enableBlur?: boolean; // 是否开启毛玻璃模糊效果
@@ -597,6 +577,17 @@ export type BackgroundWallpaperConfig = {
 						mobile: boolean; // 移动端是否启用水波纹动画效果
 				  }; // 是否启用水波纹动画效果，支持布尔值或分别设置桌面端和移动端
 			switchable?: boolean; // 是否允许用户通过控制面板切换水波纹动画
+		};
+		// 渐变过渡效果配置，当水波纹关闭时自动启用，提供壁纸底部到背景色的平滑过渡
+		gradient?: {
+			enable:
+				| boolean
+				| {
+						desktop: boolean; // 桌面端是否启用渐变过渡
+						mobile: boolean; // 移动端是否启用渐变过渡
+				  }; // 是否启用渐变过渡，支持布尔值或分别设置桌面端和移动端，默认true（水波纹关闭时自动生效）
+			height?: string; // 渐变高度，默认 "30vh"
+			switchable?: boolean; // 是否允许用户通过控制面板切换渐变过渡
 		};
 	};
 
