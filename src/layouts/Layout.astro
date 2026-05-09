@@ -472,6 +472,12 @@ const siteLang = lang.replace("_", "-");
               mainContentWrapper.style.position = "";
               mainContentWrapper.style.zIndex = "";
               mainContentWrapper.style.setProperty("margin-top", "0", "important");
+            } else if (wallpaperMode === WALLPAPER_BANNER && !isHomePage) {
+              // 桌面端横幅模式非首页：与首页相同定位（保留grid transform）
+              mainContentWrapper.style.setProperty("top", "calc(var(--banner-height) - 3rem)", "important");
+              mainContentWrapper.style.position = "";
+              mainContentWrapper.style.zIndex = "";
+              mainContentWrapper.style.setProperty("margin-top", "0", "important");
             }
             // 定位完成后显示主内容（初始CSS规则会隐藏，防止壁纸初始化前闪烁）
             mainContentWrapper.style.visibility = "visible";
@@ -984,6 +990,14 @@ function disableAnimation() {
         mainEl.style.setProperty("margin-top", "5.5rem", "important");
       }
 
+      // 桌面端横幅模式：统一用banner高度定位，不改变grid transform
+      if (!isMobileForBanner && currentMode === "banner" && mainEl) {
+        mainEl.style.setProperty("top", "calc(var(--banner-height) - 3rem)", "important");
+        mainEl.style.position = "";
+        mainEl.style.zIndex = "";
+        mainEl.style.setProperty("margin-top", "0", "important");
+      }
+
       // 更新侧边栏组件的可见性（根据新页面的 URL）
       updateSidebarComponentsVisibility();
 
@@ -1141,6 +1155,13 @@ function disableAnimation() {
             mainContentWrapper.style.setProperty("top", "0", "important");
             mainContentWrapper.style.setProperty("margin-top", "5.5rem", "important");
           }
+          // 桌面端横幅模式：统一用banner高度定位，不改变grid transform
+          if (visitDesktopMode === "banner") {
+            mainContentWrapper.style.setProperty("top", "calc(var(--banner-height) - 3rem)", "important");
+            mainContentWrapper.style.position = "";
+            mainContentWrapper.style.zIndex = "";
+            mainContentWrapper.style.setProperty("margin-top", "0", "important");
+          }
         }
       }
 
@@ -1222,6 +1243,14 @@ function disableAnimation() {
         mainEl.style.zIndex = "30";
         mainEl.style.setProperty("top", "0", "important");
         mainEl.style.setProperty("margin-top", "5.5rem", "important");
+      }
+
+      // 桌面端横幅模式：统一用banner高度定位，不改变grid transform
+      if (!isMobileForBanner && currentMode === "banner" && mainEl) {
+        mainEl.style.setProperty("top", "calc(var(--banner-height) - 3rem)", "important");
+        mainEl.style.position = "";
+        mainEl.style.zIndex = "";
+        mainEl.style.setProperty("margin-top", "0", "important");
       }
 
       // 在移动端恢复文章列表容器的过渡动画（在主内容区位置动画完成后）

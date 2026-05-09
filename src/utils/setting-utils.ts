@@ -679,10 +679,6 @@ function adjustMainContentPosition(
 	) as HTMLElement;
 	if (!mainContent) return;
 
-	// 先用内联样式锁住当前top，防止移除类时跳到默认值
-	const currentTop = getComputedStyle(mainContent).top;
-	mainContent.style.setProperty("top", currentTop, "important");
-
 	// 移除现有的位置类
 	mainContent.classList.remove("mobile-main-no-banner", "no-banner-layout");
 
@@ -693,7 +689,16 @@ function adjustMainContentPosition(
 			if (!isHome) {
 				// 移动端非首页隐藏banner，主内容从导航栏下方开始
 				mainContent.classList.add("mobile-main-no-banner");
-				mainContent.style.setProperty("top", "5.5rem", "important");
+				if (window.innerWidth < 1024) {
+					mainContent.style.setProperty("top", "5.5rem", "important");
+				} else {
+					// 桌面端：与首页相同定位（保留grid transform）
+					mainContent.style.setProperty(
+						"top",
+						"calc(var(--banner-height) - 3rem)",
+						"important",
+					);
+				}
 			} else {
 				mainContent.style.setProperty(
 					"top",
@@ -701,9 +706,6 @@ function adjustMainContentPosition(
 					"important",
 				);
 			}
-			mainContent.style.setProperty("margin-top", "0", "important");
-			mainContent.style.minHeight = "";
-			mainContent.style.position = "";
 			// 清除main-grid的内联transform，恢复CSS规则控制
 			const bannerGrid = document.getElementById("main-grid");
 			if (bannerGrid) {
