@@ -3,16 +3,21 @@ import ClientPagination from "@/components/common/ClientPagination.svelte";
 import FilterControls from "@/components/common/FilterControls.svelte";
 import I18nKey from "@/i18n/i18nKey";
 import { i18n } from "@/i18n/translation";
-import type { VndbUlistEntry } from "@/types/vndb";
+import type { MalListItem } from "@/types/mal";
+import {
+	getMalStatusOrder,
+	getMalStatusText,
+	type MalListKind,
+} from "@/utils/mal-utils";
 import Card from "./Card.svelte";
 
 interface Props {
 	sectionId: string;
-	items: VndbUlistEntry[];
+	items: MalListItem[];
 	isActive: boolean;
 	itemsPerPage?: number;
-	vnBaseUrl?: string;
-	blurNsfw: boolean;
+	kind?: MalListKind;
+	baseUrl?: string;
 }
 
 const {
@@ -20,46 +25,31 @@ const {
 	items,
 	isActive,
 	itemsPerPage = 24,
-	vnBaseUrl,
-	blurNsfw,
+	kind = "anime",
+	baseUrl = "https://myanimelist.net/anime/",
 }: Props = $props();
 
-const filterCounts = $derived.by(() => {
-	let voted = 0;
-	let unvoted = 0;
-	let notes = 0;
-	for (const item of items) {
-		if (item.vote != null) voted += 1;
-		else unvoted += 1;
-		if (item.notes) notes += 1;
-	}
-	return { voted, unvoted, notes };
-});
-
+// 状态胶囊：全部 + 各观看/阅读状态（只显示有条目的）
 const filters = $derived.by(() => {
-	const counts = filterCounts;
+	const counts: Record<string, number> = {};
+	for (const item of items) {
+		const status = item.list_status?.status || "unknown";
+		counts[status] = (counts[status] || 0) + 1;
+	}
 	return [
 		{
 			value: "all",
-			label: i18n(I18nKey.vndbFilterAll),
+			label: i18n(I18nKey.malFilterAll),
 			count: items.length,
 		},
-		{
-			value: "voted",
-			label: i18n(I18nKey.vndbFilterVoted),
-			count: counts.voted,
-		},
-		{
-			value: "unvoted",
-			label: i18n(I18nKey.vndbFilterUnvoted),
-			count: counts.unvoted,
-		},
-		{
-			value: "notes",
-			label: i18n(I18nKey.vndbFilterNotes),
-			count: counts.notes,
-		},
-	].filter((filter) => filter.value === "all" || filter.count > 0);
+		...getMalStatusOrder(kind)
+			.filter((status) => counts[status])
+			.map((status) => ({
+				value: status,
+				label: getMalStatusText(status),
+				count: counts[status],
+			})),
+	];
 });
 
 let activeFilter = $state("all");
@@ -67,12 +57,9 @@ let currentPage = $state(1);
 
 const filteredItems = $derived.by(() => {
 	if (activeFilter === "all") return items;
-	if (activeFilter === "voted")
-		return items.filter((item) => item.vote != null);
-	if (activeFilter === "unvoted")
-		return items.filter((item) => item.vote == null);
-	if (activeFilter === "notes") return items.filter((item) => item.notes);
-	return items;
+	return items.filter(
+		(item) => (item.list_status?.status || "unknown") === activeFilter,
+	);
 });
 
 const totalPages = $derived(
@@ -107,13 +94,13 @@ function goToPage(page: number) {
     />
 
     <div class="media-grid grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3">
-      {#each pagedItems as item (item.id)}
+      {#each pagedItems as item (item.node.id)}
         <div
           class="media-item"
           data-item-section={sectionId}
-          data-item-id={item.id}
+          data-item-status={item.list_status?.status || "unknown"}
         >
-          <Card item={item} loadImage={isActive} {vnBaseUrl} blurNsfw={blurNsfw}/>
+          <Card item={item} loadImage={isActive} {kind} {baseUrl}/>
         </div>
       {/each}
     </div>
@@ -126,8 +113,8 @@ function goToPage(page: number) {
     />
   {:else}
     <div class="text-center py-12">
-      <h3 class="text-xl font-medium text-gray-600 dark:text-gray-400 mb-2">{i18n(I18nKey.vndbNoData)}</h3>
-      <p class="text-gray-500 dark:text-gray-500">{i18n(I18nKey.vndbNoDataDescription)}</p>
+      <h3 class="text-xl font-medium text-gray-600 dark:text-gray-400 mb-2">{i18n(I18nKey.malNoData)}</h3>
+      <p class="text-gray-500 dark:text-gray-500">{i18n(I18nKey.malNoDataDescription)}</p>
     </div>
   {/if}
 </div>
