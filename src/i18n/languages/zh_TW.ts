@@ -26,6 +26,7 @@ export const zh_TW: Translation = {
 	[Key.categories]: "分類",
 	[Key.allCategories]: "全部分類",
 	[Key.allTags]: "全部標籤",
+	[Key.allSeries]: "全部系列",
 	[Key.recentPosts]: "最新文章",
 	[Key.postList]: "文章列表",
 	[Key.tableOfContents]: "文章目錄",
@@ -343,6 +344,13 @@ export const zh_TW: Translation = {
 	[Key.noRelatedPosts]: "暫無相關文章",
 	[Key.noRandomPosts]: "暫無隨機文章",
 
+	// 文章系列
+	[Key.series]: "系列",
+	[Key.seriesPartOf]: "所屬系列",
+	[Key.seriesPart]: "第 {n} 篇",
+	[Key.seriesThisArticle]: "本文",
+	[Key.noSeries]: "暫無系列",
+
 	// 加密
 	[Key.postEncrypted]: "本文已加密",
 
@@ -350,7 +358,7 @@ export const zh_TW: Translation = {
 	[Key.wallpaperMode]: "壁紙模式",
 	[Key.wallpaperBannerMode]: "橫幅壁紙",
 	[Key.wallpaperFullscreenMode]: "全屏壁紙",
-	[Key.wallpaperOverlayMode]: "全屏透明",
+	[Key.wallpaperOverlayMode]: "覆蓋透明",
 	[Key.wallpaperNoneMode]: "純色背景",
 
 	// 壁紙設置
