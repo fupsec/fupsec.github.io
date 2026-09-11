@@ -122,6 +122,18 @@ enum I18nKey {
 	searchBooknav = "searchBooknav",
 	booknavEmpty = "booknavEmpty",
 
+	// 项目展示页
+	projects = "projects",
+	projectsDescription = "projectsDescription",
+	projectDetails = "projectDetails",
+	projectBack = "projectBack",
+	projectEmpty = "projectEmpty",
+	projectSearch = "projectSearch",
+	projectStatusPlanning = "projectStatusPlanning",
+	projectStatusDeveloping = "projectStatusDeveloping",
+	projectStatusPublished = "projectStatusPublished",
+	projectStatusArchived = "projectStatusArchived",
+
 	// 番组计划筛选和状态文本
 	bangumiTitle = "bangumiTitle",
 	bangumiSubtitle = "bangumiSubtitle",
@@ -311,6 +323,14 @@ enum I18nKey {
 	rssCopied = "rssCopied",
 	rssCopyFailed = "rssCopyFailed",
 
+	// Atom页面
+	atom = "atom",
+	atomDescription = "atomDescription",
+	atomSubtitle = "atomSubtitle",
+	atomLink = "atomLink",
+	atomCopyToReader = "atomCopyToReader",
+	atomCopied = "atomCopied",
+
 	//最后编辑时间卡片
 	lastModifiedPrefix = "lastModifiedPrefix",
 	lastModifiedOutdated = "lastModifiedOutdated",
@@ -352,6 +372,9 @@ enum I18nKey {
 	wallpaperMode = "wallpaperMode",
 	wallpaperBannerMode = "wallpaperBannerMode",
 	wallpaperFullscreenMode = "wallpaperFullscreenMode",
+	fullscreenLayout = "fullscreenLayout",
+	fullscreenClassicLayout = "fullscreenClassicLayout",
+	fullscreenHeroLayout = "fullscreenHeroLayout",
 	wallpaperOverlayMode = "wallpaperOverlayMode",
 	wallpaperNoneMode = "wallpaperNoneMode",
 
@@ -490,6 +513,13 @@ enum I18nKey {
 	videoPrev = "videoPrev",
 	videoNext = "videoNext",
 	videoLoadError = "videoLoadError",
+
+	// 沉浸阅读 (immersive reading)
+	immersiveReading = "immersiveReading",
+	enterImmersiveReading = "enterImmersiveReading",
+	exitImmersiveReading = "exitImmersiveReading",
+	tocExpand = "tocExpand",
+	tocCollapse = "tocCollapse",
 }
 
 export default I18nKey;

@@ -392,6 +392,10 @@ html {
     .float-panel-closed * {
         @apply pointer-events-none
     }
+    /* 移动端导航抽屉打开时锁定背景滚动（由 floating-panel-utils 按 data-floating-panel-scroll-lock 切换） */
+    body.menu-open {
+        overflow: hidden;
+    }
     .search-panel mark {
         @apply bg-transparent text-(--primary)
     }
@@ -430,11 +434,6 @@ html {
     .link-underline {
         @apply transition-colors duration-150 underline decoration-2 decoration-dashed decoration-(--link-underline)
         hover:decoration-(--link-hover) active:decoration-(--link-active) underline-offset-[0.25rem]
-    }
-
-    .toc-hide,
-    .toc-not-ready {
-        @apply opacity-0 pointer-events-none
     }
 
     /* #toc-inner-wrapper {

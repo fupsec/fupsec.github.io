@@ -88,6 +88,18 @@ export const zh_TW: Translation = {
 	[Key.booknavDescription]: "收藏一些好用的網站，按分類整理",
 	[Key.searchBooknav]: "搜尋書籤...",
 	[Key.booknavEmpty]: "暫無書籤",
+
+	// 專案展示頁
+	[Key.projects]: "專案",
+	[Key.projectsDescription]: "這裡展示我開發過的專案",
+	[Key.projectDetails]: "查看詳情",
+	[Key.projectBack]: "返回專案列表",
+	[Key.projectEmpty]: "暫無專案",
+	[Key.projectSearch]: "搜尋專案",
+	[Key.projectStatusPlanning]: "規劃中",
+	[Key.projectStatusDeveloping]: "開發中",
+	[Key.projectStatusPublished]: "已發佈",
+	[Key.projectStatusArchived]: "已封存",
 	[Key.guestbook]: "留言",
 	[Key.guestbookDescription]: "歡迎在這裡留下你的足跡，分享你的想法和建議",
 	[Key.untitled]: "無標題",
@@ -317,6 +329,14 @@ export const zh_TW: Translation = {
 	[Key.rssCopied]: "RSS 鏈接已複製到剪貼板！",
 	[Key.rssCopyFailed]: "複製失敗，請手動複製鏈接",
 
+	// Atom 頁面
+	[Key.atom]: "Atom 訂閱",
+	[Key.atomDescription]: "訂閱獲取最新更新",
+	[Key.atomSubtitle]: "透過 Atom 訂閱，第一時間獲取最新文章和動態",
+	[Key.atomLink]: "Atom 連結",
+	[Key.atomCopyToReader]: "複製連結到你的 Atom 閱讀器",
+	[Key.atomCopied]: "Atom 連結已複製到剪貼簿！",
+
 	//最後編輯時間卡片
 	[Key.lastModifiedPrefix]: "最後更新於 ",
 	[Key.lastModifiedOutdated]: "部分內容可能已過時",
@@ -358,6 +378,9 @@ export const zh_TW: Translation = {
 	[Key.wallpaperMode]: "壁紙模式",
 	[Key.wallpaperBannerMode]: "橫幅壁紙",
 	[Key.wallpaperFullscreenMode]: "全屏壁紙",
+	[Key.fullscreenLayout]: "全屏佈局",
+	[Key.fullscreenClassicLayout]: "經典模式",
+	[Key.fullscreenHeroLayout]: "Hero 模式",
 	[Key.wallpaperOverlayMode]: "覆蓋透明",
 	[Key.wallpaperNoneMode]: "純色背景",
 
@@ -498,4 +521,11 @@ export const zh_TW: Translation = {
 	[Key.videoPrev]: "上一個影片",
 	[Key.videoNext]: "下一個影片",
 	[Key.videoLoadError]: "影片載入失敗",
+
+	// 沉浸閱讀
+	[Key.immersiveReading]: "沉浸閱讀",
+	[Key.enterImmersiveReading]: "進入沉浸閱讀",
+	[Key.exitImmersiveReading]: "退出沉浸閱讀",
+	[Key.tocExpand]: "展開目錄",
+	[Key.tocCollapse]: "摺疊目錄",
 };

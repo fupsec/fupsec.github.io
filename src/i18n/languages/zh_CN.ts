@@ -88,6 +88,18 @@ export const zh_CN: Translation = {
 	[Key.booknavDescription]: "收藏一些好用的网站，按分类整理",
 	[Key.searchBooknav]: "搜索书签...",
 	[Key.booknavEmpty]: "暂无书签",
+
+	// 项目展示页
+	[Key.projects]: "项目",
+	[Key.projectsDescription]: "这里展示我开发过的项目",
+	[Key.projectDetails]: "查看详情",
+	[Key.projectBack]: "返回项目列表",
+	[Key.projectEmpty]: "暂无项目",
+	[Key.projectSearch]: "搜索项目",
+	[Key.projectStatusPlanning]: "计划中",
+	[Key.projectStatusDeveloping]: "开发中",
+	[Key.projectStatusPublished]: "已发布",
+	[Key.projectStatusArchived]: "已归档",
 	[Key.guestbook]: "留言",
 	[Key.guestbookDescription]: "欢迎在这里留下你的足迹，分享你的想法和建议",
 	[Key.untitled]: "无标题",
@@ -315,6 +327,14 @@ export const zh_CN: Translation = {
 	[Key.rssCopied]: "RSS 链接已复制到剪贴板！",
 	[Key.rssCopyFailed]: "复制失败，请手动复制链接",
 
+	// Atom 页面
+	[Key.atom]: "Atom 订阅",
+	[Key.atomDescription]: "订阅获取最新更新",
+	[Key.atomSubtitle]: "通过 Atom 订阅，第一时间获取最新文章和动态",
+	[Key.atomLink]: "Atom 链接",
+	[Key.atomCopyToReader]: "复制链接到你的 Atom 阅读器",
+	[Key.atomCopied]: "Atom 链接已复制到剪贴板！",
+
 	//最后编辑时间卡片
 	[Key.lastModifiedPrefix]: "最后更新于 ",
 	[Key.lastModifiedOutdated]: "部分内容可能已过时",
@@ -356,6 +376,9 @@ export const zh_CN: Translation = {
 	[Key.wallpaperMode]: "壁纸模式",
 	[Key.wallpaperBannerMode]: "横幅壁纸",
 	[Key.wallpaperFullscreenMode]: "全屏壁纸",
+	[Key.fullscreenLayout]: "全屏布局",
+	[Key.fullscreenClassicLayout]: "经典模式",
+	[Key.fullscreenHeroLayout]: "Hero 模式",
 	[Key.wallpaperOverlayMode]: "覆盖透明",
 	[Key.wallpaperNoneMode]: "纯色背景",
 
@@ -496,4 +519,11 @@ export const zh_CN: Translation = {
 	[Key.videoPrev]: "上一个视频",
 	[Key.videoNext]: "下一个视频",
 	[Key.videoLoadError]: "视频加载失败",
+
+	// 沉浸阅读
+	[Key.immersiveReading]: "沉浸阅读",
+	[Key.enterImmersiveReading]: "进入沉浸阅读",
+	[Key.exitImmersiveReading]: "退出沉浸阅读",
+	[Key.tocExpand]: "展开目录",
+	[Key.tocCollapse]: "折叠目录",
 };
